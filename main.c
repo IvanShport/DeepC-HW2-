@@ -78,6 +78,24 @@ char* createStringFromLongNumber(LongNumber* LN) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+int calcCompareWIthLongNumber(LongNumber* leftValue, LongNumber* rightValue) {
+    if (leftValue->size > rightValue->size) {
+        return 1;
+    } else if (leftValue->size < rightValue->size) {
+        return -1;
+    }
+    else {
+
+        for (int i = (int)leftValue->size - 1; i >= 0; i--) {
+            if (leftValue->arrayOfNumber[i] > rightValue->arrayOfNumber[i]) return 1;
+            if (leftValue->arrayOfNumber[i] < rightValue->arrayOfNumber[i]) return -1;
+        }
+        return 0;
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 LongNumber* calcAdditionWIthLongNumber(LongNumber* leftValue, LongNumber* rightValue, size_t resultSize) {
     LongNumber* resultLN = initLongNumber();
     if(resultLN == NULL) {
@@ -189,10 +207,52 @@ char* calcMultiplicationWIthString(char* leftValue, size_t leftSize, char* right
 
     deleteZero(resultLN);
     char* resultString = createStringFromLongNumber(resultLN);
-    free(resultLN);
+    freeLongNumber(resultLN);
 
     return resultString;
 }
+
+//----------------------------------------------------------------------------------------------------------------------
+
+char* calcSubtractionWIthString(char* leftValue, size_t leftSize, char* rightValue, size_t rightSize) {
+    LongNumber* leftLN = createLongNumberFromString(leftValue, leftSize, 1);
+    if (leftLN == NULL) {
+        return NULL;
+    }
+    LongNumber* rightLN = createLongNumberFromString(rightValue, rightSize, 1);
+    if (rightLN == NULL) {
+        freeLongNumber(leftLN);
+        return NULL;
+    }
+
+    if (calcCompareWIthLongNumber(leftLN, rightLN) == -1) {
+        LongNumber* temp = leftLN;
+        leftLN = rightLN;
+        rightLN = temp;
+    }
+
+    int buffer = 0;
+    int rightBuffer = 0;
+
+    for (size_t i = 0; i < leftLN->size; i++) {
+        rightBuffer = rightLN->size > i ? rightLN->arrayOfNumber[i] : 0;
+        buffer = leftLN->arrayOfNumber[i] - rightBuffer - buffer;
+        leftLN->arrayOfNumber[i] = (buffer + 10) % 10;
+        buffer = buffer < 0 ? 1 : 0;
+    }
+
+    deleteZero(leftLN);
+    char* resultString = createStringFromLongNumber(leftLN);
+    //TODO
+    freeLongNumber(leftLN);
+    freeLongNumber(rightLN);
+
+    return resultString;
+
+
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 
 char* input_row(){
     size_t size = START_SIZE_FOR_STRING;
@@ -232,14 +292,12 @@ int main(int argc, char const *argv[]) {
     char* leftValue = input_row();
     char* rightValue = input_row();
 
-    char* result = calcMultiplicationWIthString(leftValue, strlen(leftValue), rightValue, strlen(rightValue));
+    char* result = calcSubtractionWIthString(leftValue, strlen(leftValue), rightValue, strlen(rightValue));
     if(result == NULL) {
         free(leftValue);
         free(rightValue);
         return 0;
     }
-
-    // mult(leftValue, strlen(leftValue), rightValue, strlen(rightValue));
 
     free(leftValue);
     free(rightValue);
