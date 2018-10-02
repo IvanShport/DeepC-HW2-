@@ -29,230 +29,50 @@ void freeLongNumber(LongNumber* LN) {
     free(LN);
 }
 
-char toChar(int value) {
-    return value + '0';
-}
-
-int toInt(char value) {
-    return value - '0';
-}
-
-void deleteZero(LongNumber* targetLN) {
-    while (targetLN->arrayOfNumber[targetLN->size - 1] == 0) {
-        targetLN->size--;
-    }
-}
-
-LongNumber* createLongNumberFromString(char* stringOfNumbers, size_t stringSize, int sign) {
-    LongNumber* LN = initLongNumber();
-    if(LN == NULL) {
-        return NULL;
-    }
-    LN->arrayOfNumber = (int*)malloc(stringSize * sizeof(int));
-    if(LN->arrayOfNumber == NULL) {
-        printf("[error]\n");
-        free(LN);
-        return NULL;
-    }
-    LN->size = stringSize;
-    LN->sign = sign;
-
-    for (int i = (int)LN->size - 1; i >= 0; i--) {
-        LN->arrayOfNumber[LN->size - 1 - i] = toInt(stringOfNumbers[i]);
-    }
-    return LN;
-}
-
-char* createStringFromLongNumber(LongNumber* LN) {
-    char* stringOfNumbers = (char*)malloc(LN->size * sizeof(char));
-    if(stringOfNumbers == NULL) {
-        printf("[error]\n");
-        return NULL;
-    }
-
-    for (int i = (int)LN->size - 1; i >= 0; i--) {
-        stringOfNumbers[LN->size - 1 - i] = toChar(LN->arrayOfNumber[i]);
-    }
-    return stringOfNumbers;
-}
-
 //----------------------------------------------------------------------------------------------------------------------
 
-int calcCompareWIthLongNumber(LongNumber* leftValue, LongNumber* rightValue) {
-    if (leftValue->size > rightValue->size) {
-        return 1;
-    } else if (leftValue->size < rightValue->size) {
-        return -1;
-    }
-    else {
+char toChar(int value);
+int toInt(char value);
+void deleteZero(LongNumber* targetLN);
+LongNumber* createLongNumberFromString(char* stringOfNumbers, size_t stringSize, int sign);
+int reversLongNumber(LongNumber* LN);
+//----------------------------------------------------------------------------------------------------------------------
+int calcCompareWIthLongNumber(LongNumber* leftValue, LongNumber* rightValue);
+//----------------------------------------------------------------------------------------------------------------------
+LongNumber* calcAdditionWIthLongNumber(LongNumber* leftValue, LongNumber* rightValue);
+LongNumber* calcAdditionWIthString(char* leftValue, size_t leftSize, char* rightValue, size_t rightSize);
+//----------------------------------------------------------------------------------------------------------------------
+LongNumber* calcMultiplicationWIthLongNumber(LongNumber* leftValue, LongNumber* rightValue);
+LongNumber* calcMultiplicationWIthString(char* leftValue, size_t leftSize, char* rightValue, size_t rightSize);
+//----------------------------------------------------------------------------------------------------------------------
+LongNumber* calcSubtractionWIthString(char* leftValue, size_t leftSize, char* rightValue, size_t rightSize);
+//----------------------------------------------------------------------------------------------------------------------
+char* input_row();
 
-        for (int i = (int)leftValue->size - 1; i >= 0; i--) {
-            if (leftValue->arrayOfNumber[i] > rightValue->arrayOfNumber[i]) return 1;
-            if (leftValue->arrayOfNumber[i] < rightValue->arrayOfNumber[i]) return -1;
-        }
+int main(int argc, char const *argv[]) {
+
+    char* leftValue = input_row();
+    char* rightValue = input_row();
+
+    LongNumber* result = calcMultiplicationWIthString(leftValue, strlen(leftValue), rightValue, strlen(rightValue));
+    if(result == NULL) {
+        free(leftValue);
+        free(rightValue);
         return 0;
     }
+
+    free(leftValue);
+    free(rightValue);
+    printf("%d\n", result->sign);
+    for (size_t i = 0; i < result->size; i++) {
+        printf("%d", result->arrayOfNumber[i]);
+    }
+    printf("\n");
+
+    freeLongNumber(result);
+
+    return 0;
 }
-
-//----------------------------------------------------------------------------------------------------------------------
-
-LongNumber* calcAdditionWIthLongNumber(LongNumber* leftValue, LongNumber* rightValue, size_t resultSize) {
-    LongNumber* resultLN = initLongNumber();
-    if(resultLN == NULL) {
-        return NULL;
-    }
-    resultLN->arrayOfNumber = (int*)malloc(resultSize * sizeof(int));
-    if(resultLN->arrayOfNumber == NULL) {
-        printf("[error]\n");
-        free(resultLN);
-        freeLongNumber(leftValue);
-        freeLongNumber(rightValue);
-        return NULL;
-    }
-    resultLN->size = resultSize;
-    resultLN->sign = 1;
-
-    for (size_t i = 0; i < resultLN->size; i++) {
-        resultLN->arrayOfNumber[i] += leftValue->arrayOfNumber[i] + rightValue->arrayOfNumber[i];
-        resultLN->arrayOfNumber[i + 1] += resultLN->arrayOfNumber[i] / 10;
-        resultLN->arrayOfNumber[i] %= 10;
-    }
-
-    freeLongNumber(leftValue);
-    freeLongNumber(rightValue);
-
-    return resultLN;
-}
-
-char* calcAdditionWIthString(char* leftValue, size_t leftSize, char* rightValue, size_t rightSize) {
-    LongNumber* leftLN = createLongNumberFromString(leftValue, leftSize, 1);
-    if(leftLN == NULL) {
-        return NULL;
-    }
-    LongNumber* rightLN = createLongNumberFromString(rightValue, rightSize, 1);
-    if(rightLN == NULL) {
-        freeLongNumber(leftLN);
-        return NULL;
-    }
-
-    size_t resultSize = 0;
-
-    if(rightSize > leftSize) {
-        resultSize = rightSize + 1;
-    }
-    else {
-        resultSize = leftSize + 1;
-    }
-
-    LongNumber* resultLN = calcAdditionWIthLongNumber(leftLN, rightLN, resultSize);
-
-    deleteZero(resultLN);
-    char* resultString = createStringFromLongNumber(resultLN);
-    freeLongNumber(resultLN);
-
-    return resultString;
-}
-
-//---------------------------------------------------------------------------------------------------------------------
-
-LongNumber* calcMultiplicationWIthLongNumber(LongNumber* leftValue, LongNumber* rightValue, size_t resultSize) {
-    LongNumber* resultLN = initLongNumber();
-    if(resultLN == NULL) {
-        return NULL;
-    }
-    resultLN->arrayOfNumber = (int*)malloc(resultSize * sizeof(int));
-    if(resultLN->arrayOfNumber == NULL) {
-        printf("[error]\n");
-        free(resultLN);
-        freeLongNumber(leftValue);
-        freeLongNumber(rightValue);
-        return NULL;
-    }
-    resultLN->size = resultSize;
-    resultLN->sign = 1;
-
-    for (size_t i = 0; i < leftValue->size; i++) {
-        for (size_t j = 0; j < rightValue->size; j++) {
-            resultLN->arrayOfNumber[i + j] += leftValue->arrayOfNumber[i] * rightValue->arrayOfNumber[j];
-        }
-    }
-
-    for (size_t i = 0; i < resultLN->size; i++) {
-        resultLN->arrayOfNumber[i + 1] += resultLN->arrayOfNumber[i] / 10;
-        resultLN->arrayOfNumber[i] %= 10;
-    }
-
-    freeLongNumber(leftValue);
-    freeLongNumber(rightValue);
-
-    return resultLN;
-}
-
-char* calcMultiplicationWIthString(char* leftValue, size_t leftSize, char* rightValue, size_t rightSize) {
-    size_t resultSize = rightSize + leftSize + 1;
-
-    LongNumber* leftLN = createLongNumberFromString(leftValue, leftSize, 1);
-    if(leftLN == NULL) {
-        return NULL;
-    }
-    LongNumber* rightLN = createLongNumberFromString(rightValue, rightSize, 1);
-    if(rightLN == NULL) {
-        freeLongNumber(leftLN);
-        return NULL;
-    }
-    LongNumber* resultLN = calcMultiplicationWIthLongNumber(leftLN, rightLN, resultSize);
-    if(resultLN == NULL){
-        return NULL;
-    }
-
-    deleteZero(resultLN);
-    char* resultString = createStringFromLongNumber(resultLN);
-    freeLongNumber(resultLN);
-
-    return resultString;
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-char* calcSubtractionWIthString(char* leftValue, size_t leftSize, char* rightValue, size_t rightSize) {
-    LongNumber* leftLN = createLongNumberFromString(leftValue, leftSize, 1);
-    if (leftLN == NULL) {
-        return NULL;
-    }
-    LongNumber* rightLN = createLongNumberFromString(rightValue, rightSize, 1);
-    if (rightLN == NULL) {
-        freeLongNumber(leftLN);
-        return NULL;
-    }
-
-    if (calcCompareWIthLongNumber(leftLN, rightLN) == -1) {
-        LongNumber* temp = leftLN;
-        leftLN = rightLN;
-        rightLN = temp;
-    }
-
-    int buffer = 0;
-    int rightBuffer = 0;
-
-    for (size_t i = 0; i < leftLN->size; i++) {
-        rightBuffer = rightLN->size > i ? rightLN->arrayOfNumber[i] : 0;
-        buffer = leftLN->arrayOfNumber[i] - rightBuffer - buffer;
-        leftLN->arrayOfNumber[i] = (buffer + 10) % 10;
-        buffer = buffer < 0 ? 1 : 0;
-    }
-
-    deleteZero(leftLN);
-    char* resultString = createStringFromLongNumber(leftLN);
-    //TODO
-    freeLongNumber(leftLN);
-    freeLongNumber(rightLN);
-
-    return resultString;
-
-
-}
-
-//----------------------------------------------------------------------------------------------------------------------
 
 char* input_row(){
     size_t size = START_SIZE_FOR_STRING;
@@ -287,22 +107,250 @@ char* input_row(){
     return row_pointer;
 }
 
-int main(int argc, char const *argv[]) {
+//----------------------------------------------------------------------------------------------------------------------
 
-    char* leftValue = input_row();
-    char* rightValue = input_row();
+LongNumber* calcAdditionWIthLongNumber(LongNumber* leftValue, LongNumber* rightValue) {
+    size_t resultSize = rightValue->size > leftValue->size ? rightValue->size + 1 : leftValue->size + 1;
 
-    char* result = calcSubtractionWIthString(leftValue, strlen(leftValue), rightValue, strlen(rightValue));
-    if(result == NULL) {
-        free(leftValue);
-        free(rightValue);
-        return 0;
+    LongNumber* resultLN = initLongNumber();
+    if(resultLN == NULL) {
+        return NULL;
+    }
+    resultLN->arrayOfNumber = (int*)malloc(resultSize * sizeof(int));
+    if(resultLN->arrayOfNumber == NULL) {
+        printf("[error]\n");
+        free(resultLN);
+        freeLongNumber(leftValue);
+        freeLongNumber(rightValue);
+        return NULL;
+    }
+    resultLN->size = resultSize;
+    resultLN->sign = leftValue->sign;
+
+    for (size_t i = 0; i < resultLN->size; i++) {
+        resultLN->arrayOfNumber[i] += leftValue->arrayOfNumber[i] + rightValue->arrayOfNumber[i];
+        resultLN->arrayOfNumber[i + 1] += resultLN->arrayOfNumber[i] / 10;
+        resultLN->arrayOfNumber[i] %= 10;
     }
 
-    free(leftValue);
-    free(rightValue);
-    printf("%s\n", result);
-    free(result);
+    freeLongNumber(leftValue);
+    freeLongNumber(rightValue);
+
+    return resultLN;
+}
+
+LongNumber* calcSubtractionWIthLongNumber(LongNumber* leftValue, LongNumber* rightValue);
+
+LongNumber* calcAdditionWIthString(char* leftValue, size_t leftSize, char* rightValue, size_t rightSize) {
+    LongNumber* leftLN = createLongNumberFromString(leftValue, leftSize, 1);
+    if(leftLN == NULL) {
+        return NULL;
+    }
+    LongNumber* rightLN = createLongNumberFromString(rightValue, rightSize, 1);
+    if(rightLN == NULL) {
+        freeLongNumber(leftLN);
+        return NULL;
+    }
+
+    LongNumber* resultLN = NULL;
+
+    if (leftLN->sign == rightLN->sign) {
+        resultLN = calcAdditionWIthLongNumber(leftLN, rightLN);
+    } else {
+        if (leftLN->sign < 0) {
+            resultLN = calcSubtractionWIthLongNumber(rightLN, leftLN);
+        }
+        if (rightLN->sign < 0) {
+            resultLN = calcSubtractionWIthLongNumber(leftLN, rightLN);
+        }
+
+    }
+
+    deleteZero(resultLN);
+    reversLongNumber(resultLN);
+
+    return resultLN;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+LongNumber* calcMultiplicationWIthLongNumber(LongNumber* leftValue, LongNumber* rightValue) {
+    size_t resultSize = rightValue->size + leftValue->size + 1;
+
+    LongNumber* resultLN = initLongNumber();
+    if(resultLN == NULL) {
+        return NULL;
+    }
+    resultLN->arrayOfNumber = (int*)malloc(resultSize * sizeof(int));
+    if(resultLN->arrayOfNumber == NULL) {
+        printf("[error]\n");
+        free(resultLN);
+        freeLongNumber(leftValue);
+        freeLongNumber(rightValue);
+        return NULL;
+    }
+    resultLN->size = resultSize;
+    resultLN->sign = leftValue->sign * rightValue->sign;
+
+    for (size_t i = 0; i < leftValue->size; i++) {
+        for (size_t j = 0; j < rightValue->size; j++) {
+            resultLN->arrayOfNumber[i + j] += leftValue->arrayOfNumber[i] * rightValue->arrayOfNumber[j];
+        }
+    }
+
+    for (size_t i = 0; i < resultLN->size; i++) {
+        resultLN->arrayOfNumber[i + 1] += resultLN->arrayOfNumber[i] / 10;
+        resultLN->arrayOfNumber[i] %= 10;
+    }
+
+    freeLongNumber(leftValue);
+    freeLongNumber(rightValue);
+
+    return resultLN;
+}
+
+LongNumber* calcMultiplicationWIthString(char* leftValue, size_t leftSize, char* rightValue, size_t rightSize) {
+    LongNumber* leftLN = createLongNumberFromString(leftValue, leftSize, -1);
+    if(leftLN == NULL) {
+        return NULL;
+    }
+    LongNumber* rightLN = createLongNumberFromString(rightValue, rightSize, 1);
+    if(rightLN == NULL) {
+        freeLongNumber(leftLN);
+        return NULL;
+    }
+    LongNumber* resultLN = calcMultiplicationWIthLongNumber(leftLN, rightLN);
+    if(resultLN == NULL){
+        return NULL;
+    }
+
+    deleteZero(resultLN);
+    reversLongNumber(resultLN);
+
+    return resultLN;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+LongNumber* calcSubtractionWIthLongNumber(LongNumber* leftValue, LongNumber* rightValue) {
+    if (calcCompareWIthLongNumber(leftValue, rightValue) == -1) {
+        LongNumber* tempLN = leftValue;
+        leftValue = rightValue;
+        rightValue = tempLN;
+        leftValue->sign = -1;
+    }
+
+    int buffer = 0;
+    int rightBuffer = 0;
+
+    for (size_t i = 0; i < leftValue->size; i++) {
+        rightBuffer = rightValue->size > i ? rightValue->arrayOfNumber[i] : 0;
+        buffer = leftValue->arrayOfNumber[i] - rightBuffer - buffer;
+        leftValue->arrayOfNumber[i] = (buffer + 10) % 10;
+        buffer = buffer < 0 ? 1 : 0;
+    }
+
+    freeLongNumber(rightValue);
+
+    return leftValue;
+}
+
+LongNumber* calcSubtractionWIthString(char* leftValue, size_t leftSize, char* rightValue, size_t rightSize) {
+    LongNumber *leftLN = createLongNumberFromString(leftValue, leftSize, -1);
+    if (leftLN == NULL) {
+        return NULL;
+    }
+    LongNumber *rightLN = createLongNumberFromString(rightValue, rightSize, 1);
+    if (rightLN == NULL) {
+        freeLongNumber(leftLN);
+        return NULL;
+    }
+
+    LongNumber *resultLN = NULL;
+
+    if (leftLN->sign == rightLN->sign) {
+        if (leftLN->sign == 1) {
+            resultLN = calcSubtractionWIthLongNumber(leftLN, rightLN);
+        } else {
+            resultLN = calcSubtractionWIthLongNumber(rightLN, leftLN);
+        }
+    } else {
+        resultLN = calcAdditionWIthLongNumber(leftLN, rightLN);
+    }
+
+    deleteZero(resultLN);
+    reversLongNumber(resultLN);
+
+    return resultLN;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+int calcCompareWIthLongNumber(LongNumber* leftValue, LongNumber* rightValue) {
+    if (leftValue->size > rightValue->size) {
+        return 1;
+    } else if (leftValue->size < rightValue->size) {
+        return -1;
+    }
+    else {
+
+        for (int i = (int)leftValue->size - 1; i >= 0; i--) {
+            if (leftValue->arrayOfNumber[i] > rightValue->arrayOfNumber[i]) return 1;
+            if (leftValue->arrayOfNumber[i] < rightValue->arrayOfNumber[i]) return -1;
+        }
+        return 0;
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+LongNumber* createLongNumberFromString(char* stringOfNumbers, size_t stringSize, int sign) {
+    LongNumber* LN = initLongNumber();
+    if(LN == NULL) {
+        return NULL;
+    }
+    LN->arrayOfNumber = (int*)malloc(stringSize * sizeof(int));
+    if(LN->arrayOfNumber == NULL) {
+        printf("[error]\n");
+        free(LN);
+        return NULL;
+    }
+    LN->size = stringSize;
+    LN->sign = sign;
+
+    for (int i = (int)LN->size - 1; i >= 0; i--) {
+        LN->arrayOfNumber[LN->size - 1 - i] = toInt(stringOfNumbers[i]);
+    }
+    return LN;
+}
+
+int reversLongNumber(LongNumber* LN) {
+    int* arrayOfNumber = (int*)malloc(LN->size * sizeof(int));
+    if(arrayOfNumber == NULL) {
+        printf("[error]\n");
+        return 1;
+    }
+
+    for (int i = (int)LN->size - 1; i >= 0; i--) {
+        arrayOfNumber[LN->size - 1 - i] = LN->arrayOfNumber[i];
+    }
+
+    free(LN->arrayOfNumber);
+    LN->arrayOfNumber = arrayOfNumber;
 
     return 0;
+}
+
+char toChar(int value) {
+    return value + '0';
+}
+
+int toInt(char value) {
+    return value - '0';
+}
+
+void deleteZero(LongNumber* targetLN) {
+    while (targetLN->arrayOfNumber[targetLN->size - 1] == 0 && targetLN->size > 1) {
+        targetLN->size--;
+    }
 }
