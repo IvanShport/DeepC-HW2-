@@ -51,14 +51,14 @@
 ////----------------------------------------------------------------------------------------------------------------------
 //int calcCompareWIthLongNumber(LongNumber* leftValue, LongNumber* rightValue);
 ////----------------------------------------------------------------------------------------------------------------------
-//LongNumber* calcAdditionWIthLongNumber(LongNumber* leftLN, LongNumber* rightLN);
-//LongNumber* calcAdditionWIthString(char* leftValue, size_t leftSize, char* rightValue, size_t rightSize);
+//LongNumber* calcAdditionAlgo(LongNumber* leftLN, LongNumber* rightLN);
+//LongNumber* calcAddition(char* leftValue, size_t leftSize, char* rightValue, size_t rightSize);
 ////----------------------------------------------------------------------------------------------------------------------
-//LongNumber* calcMultiplicationWIthLongNumber(LongNumber* leftLN, LongNumber* rightLN);
+//LongNumber* calcMultiplication(LongNumber* leftLN, LongNumber* rightLN);
 //LongNumber* calcMultiplicationWIthString(char* leftValue, size_t leftSize, char* rightValue, size_t rightSize);
 ////----------------------------------------------------------------------------------------------------------------------
-//LongNumber* calcSubtractionWIthLongNumber(LongNumber* leftLN, LongNumber* rightLN);
-//LongNumber* calcSubtractionWIthString(char* leftValue, size_t leftSize, char* rightValue, size_t rightSize);
+//LongNumber* calcSubtractionAlgo(LongNumber* leftLN, LongNumber* rightLN);
+//LongNumber* calcSubtraction(char* leftValue, size_t leftSize, char* rightValue, size_t rightSize);
 ////----------------------------------------------------------------------------------------------------------------------
 //LongNumber* shiftForLongNumber(LongNumber *value, int difference);
 //LongNumber* calcDivisionWIthLongNumber(LongNumber* leftLN, LongNumber* rightLN);
@@ -122,7 +122,7 @@
 //
 ////----------------------------------------------------------------------------------------------------------------------
 //
-//LongNumber* calcAdditionWIthLongNumber(LongNumber* leftLN, LongNumber* rightLN) {
+//LongNumber* calcAdditionAlgo(LongNumber* leftLN, LongNumber* rightLN) {
 //    size_t resultSize = rightLN->size > leftLN->size ? rightLN->size + 1 : leftLN->size + 1;
 //
 //    LongNumber* resultLN = initLongNumber(resultSize);
@@ -148,9 +148,9 @@
 //    return resultLN;
 //}
 //
-//LongNumber* calcSubtractionWIthLongNumber(LongNumber* leftLN, LongNumber* rightLN);
+//LongNumber* calcSubtractionAlgo(LongNumber* leftLN, LongNumber* rightLN);
 //
-//LongNumber* calcAdditionWIthString(char* leftValue, size_t leftSize, char* rightValue, size_t rightSize) {
+//LongNumber* calcAddition(char* leftValue, size_t leftSize, char* rightValue, size_t rightSize) {
 //    LongNumber* leftLN = createLongNumberFromString(leftValue, leftSize, 1);
 //    if(leftLN == NULL) {
 //        return NULL;
@@ -164,13 +164,13 @@
 //    LongNumber* resultLN = NULL;
 //
 //    if (leftLN->sign == rightLN->sign) {
-//        resultLN = calcAdditionWIthLongNumber(leftLN, rightLN);
+//        resultLN = calcAdditionAlgo(leftLN, rightLN);
 //    } else {
 //        if (leftLN->sign < 0) {
-//            resultLN = calcSubtractionWIthLongNumber(rightLN, leftLN);
+//            resultLN = calcSubtractionAlgo(rightLN, leftLN);
 //        }
 //        if (rightLN->sign < 0) {
-//            resultLN = calcSubtractionWIthLongNumber(leftLN, rightLN);
+//            resultLN = calcSubtractionAlgo(leftLN, rightLN);
 //        }
 //    }
 //
@@ -190,7 +190,7 @@
 //
 ////---------------------------------------------------------------------------------------------------------------------
 //
-//LongNumber* calcMultiplicationWIthLongNumber(LongNumber* leftLN, LongNumber* rightLN) {
+//LongNumber* calcMultiplication(LongNumber* leftLN, LongNumber* rightLN) {
 //    size_t resultSize = rightLN->size + leftLN->size + 1;
 //
 //    LongNumber* resultLN = initLongNumber(resultSize);
@@ -228,7 +228,7 @@
 //        freeLongNumber(leftLN);
 //        return NULL;
 //    }
-//    LongNumber* resultLN = calcMultiplicationWIthLongNumber(leftLN, rightLN);
+//    LongNumber* resultLN = calcMultiplication(leftLN, rightLN);
 //    if(resultLN == NULL){
 //        freeLongNumber(leftLN);
 //        freeLongNumber(rightLN);
@@ -242,7 +242,7 @@
 //
 ////----------------------------------------------------------------------------------------------------------------------
 //
-//LongNumber* calcSubtractionWIthLongNumber(LongNumber* leftLN, LongNumber* rightLN) {
+//LongNumber* calcSubtractionAlgo(LongNumber* leftLN, LongNumber* rightLN) {
 //    if (calcCompareWIthLongNumber(leftLN, rightLN) == -1) {
 //        LongNumber* tempLN = leftLN;
 //        leftLN = rightLN;
@@ -271,7 +271,7 @@
 //    return resultLN;
 //}
 //
-//LongNumber* calcSubtractionWIthString(char* leftValue, size_t leftSize, char* rightValue, size_t rightSize) {
+//LongNumber* calcSubtraction(char* leftValue, size_t leftSize, char* rightValue, size_t rightSize) {
 //    LongNumber *leftLN = createLongNumberFromString(leftValue, leftSize, -1);
 //    if (leftLN == NULL) {
 //        return NULL;
@@ -286,13 +286,13 @@
 //
 //    if (leftLN->sign == rightLN->sign) {
 //        if (leftLN->sign == 1) {
-//            resultLN = calcSubtractionWIthLongNumber(leftLN, rightLN);
+//            resultLN = calcSubtractionAlgo(leftLN, rightLN);
 //        } else {
 //            rightLN->sign *= -1;
-//            resultLN = calcSubtractionWIthLongNumber(rightLN, leftLN);
+//            resultLN = calcSubtractionAlgo(rightLN, leftLN);
 //        }
 //    } else {
-//        resultLN = calcAdditionWIthLongNumber(leftLN, rightLN);
+//        resultLN = calcAdditionAlgo(leftLN, rightLN);
 //
 //    }
 //
@@ -371,14 +371,14 @@
 //        digit = 0;
 //
 //        do {
-//            tempLN = calcAdditionWIthLongNumber(tempLN, rightLN);
+//            tempLN = calcAdditionAlgo(tempLN, rightLN);
 //            digit++;
 //        } while(calcCompareWIthLongNumber(tempLN, leftLN) <= 0);
 //
-//        tempLN = calcSubtractionWIthLongNumber(tempLN, rightLN);
+//        tempLN = calcSubtractionAlgo(tempLN, rightLN);
 //        digit--;
 //
-//        leftLN = calcSubtractionWIthLongNumber(leftLN, tempLN);
+//        leftLN = calcSubtractionAlgo(leftLN, tempLN);
 //        resultLN->arrayOfNumber[difference] = digit;
 //
 //        if (reversLongNumber(rightLN)) {
