@@ -8,6 +8,13 @@
 #define BUFFER_FOR_INPUT 64
 #define START_MEM_FOR_INPUT 1024
 
+#define __add '+'
+#define __sub '-'
+#define __mult '*'
+#define __div '/'
+#define __open_br '('
+#define __close_br ')'
+
 typedef struct LongNumber {
   int *arrayOfNumber;
   size_t size;
@@ -89,18 +96,18 @@ void pop(Stack *stack) {
 int push(Stack *stack, char *new_value) {
   if (stack->real_size == stack->max_size) {
     if (realloc_for_stack(stack) == NULL)
-      return 1;
+      return EXIT_FAILURE;
   }
 
   char *copy_new_value = (char *)malloc((strlen(new_value) + 1) * sizeof(char));
   if (copy_new_value == NULL)
-    return 1;
+    return EXIT_FAILURE;
   memcpy(copy_new_value, new_value, strlen(new_value));
   copy_new_value[strlen(new_value)] = '\0';
 
   stack->strings[stack->real_size] = copy_new_value;
   stack->real_size++;
-  return 0;
+  return EXIT_SUCCESS;
 }
 
 char *top(Stack *stack) {
@@ -236,7 +243,7 @@ char *calculateExpression(const char *str) {
     return NULL;
   }
 
-  if (parseExpression(operators, operands, str) != 0) {
+  if (parseExpression(operators, operands, str) == EXIT_FAILURE) {
     free_stack(operands);
     free_stack(operators);
     return NULL;
@@ -258,82 +265,90 @@ char *calculateExpression(const char *str) {
 int parseExpression(Stack *operators, Stack *operands, const char *str) {
   size_t i = 0;
   int numberIsLast = 0;
-  for (; i < strlen(str); i++) {
+  size_t size_of_str = strlen(str);
+  char *top_operator_in_stack = NULL;
+  for (; i < size_of_str; i++) {
 
-    for (; str[i] && isspace(str[i]); i++) {
-    }
+    while (str[i] && isspace(str[i])) i++;
 
-    if (isOperator(str[i]) && str[i] != '-') {
+    if (isOperator(str[i]) && str[i] != __sub) {
       numberIsLast = 0;
-      if (addOperator(operators, str[i], operands) != 0)
-        return 1;
+      if (addOperator(operators, str[i], operands) == EXIT_FAILURE)
+        return EXIT_FAILURE;
+      continue;
     }
 
-    else if (isdigit(str[i])) {
+    if (isdigit(str[i])) {
       numberIsLast = 1;
-      if (addOperand(operands, str, &i, 1) != 0)
-        return 1;
+      if (addOperand(operands, str, &i, 1) == EXIT_FAILURE)
+        return EXIT_FAILURE;
+      continue;
     }
 
-    else if (str[i] == '-') {
-      if (checkOnUnoOrBinMinus(operands, operators, str, &i, &numberIsLast) !=
-          0)
-        return 1;
+    if (str[i] == __sub) {
+      if (checkOnUnoOrBinMinus(operands, operators, str, &i, &numberIsLast) ==
+        EXIT_FAILURE)
+        return EXIT_FAILURE;
+      continue;
     }
 
-    else if (str[i] == ')') {
-      while (top(operators) == NULL ||
-             *top(operators) != '(') { // Вычисляем содержимое скобок
-        if (top(operators) == NULL)
-          return 1;
-        if (createOperation(operands, *top(operators)) != 0)
-          return 1;
+    if (str[i] == __close_br) {
+      top_operator_in_stack = top(operators);
+      while (top_operator_in_stack == NULL ||
+             *top_operator_in_stack != __open_br) {
+        if (top_operator_in_stack == NULL)
+          return EXIT_FAILURE;
+        if (createOperation(operands, *top_operator_in_stack) == EXIT_FAILURE)
+          return EXIT_FAILURE;
         pop(operators);
+        top_operator_in_stack = top(operators);
       }
       pop(operators);
-    } else
-      return 1;
+      continue;
+    }
+
+    return EXIT_FAILURE;
   }
 
-  return 0;
+  return EXIT_SUCCESS;
 }
 
 int isOperator(const char symbol) {
-  return symbol == '*' || symbol == '/' || symbol == '+' || symbol == '-' ||
-         symbol == '(';
+  return symbol == __mult || symbol == __div || symbol == __add || symbol == __sub ||
+         symbol == __open_br;
 }
 
 int addOperator(Stack *operators, const char op, Stack *operands) {
   char *temp = (char *)malloc(2 * sizeof(char));
   if (temp == NULL)
-    return 1;
+    return EXIT_FAILURE;
   temp[0] = op;
   temp[1] = '\0';
 
-  if (*temp == '(' || operators->real_size == 0 ||
+  if (*temp == __open_br || operators->real_size == 0 ||
       get_priority(*temp) > get_priority(*top(operators))) {
-    if (push(operators, temp) != 0) {
+    if (push(operators, temp) == EXIT_FAILURE) {
       free(temp);
-      return 1;
+      return EXIT_FAILURE;
     }
   }
 
   else {
     while (operators->real_size != 0 &&
            get_priority(*top(operators)) >= get_priority(*temp)) {
-      if (createOperation(operands, *top(operators)) != 0) {
+      if (createOperation(operands, *top(operators)) == EXIT_FAILURE) {
         free(temp);
-        return 1;
+        return EXIT_FAILURE;
       }
       pop(operators);
     }
-    if (push(operators, temp) != 0) {
+    if (push(operators, temp) == EXIT_FAILURE) {
       free(temp);
-      return 1;
+      return EXIT_FAILURE;
     }
   }
   free(temp);
-  return 0;
+  return EXIT_SUCCESS;
 }
 
 int addOperand(Stack *operands, const char *str, size_t *startIndex,
@@ -344,20 +359,20 @@ int addOperand(Stack *operands, const char *str, size_t *startIndex,
 
   char *temp = (char *)calloc((j - *startIndex + 2), sizeof(char));
   if (temp == NULL)
-    return 1;
-  temp[0] = (char)(sign < 0 ? '-' : '+');
+    return EXIT_FAILURE;
+  temp[0] = (char)(sign < 0 ? __sub : __add);
   temp[j - *startIndex + 1] = '\0';
 
   memcpy(temp + 1, str + *startIndex, j - *startIndex);
 
-  if (push(operands, temp) != 0) {
+  if (push(operands, temp) == EXIT_FAILURE) {
     free(temp);
-    return 1;
+    return EXIT_FAILURE;
   }
   *startIndex = --j;
   free(temp);
 
-  return 0;
+  return EXIT_SUCCESS;
 }
 
 int checkOnUnoOrBinMinus(Stack *operands, Stack *operators, const char *str,
@@ -368,7 +383,7 @@ int checkOnUnoOrBinMinus(Stack *operands, Stack *operators, const char *str,
 
   if (isOperator(str[j]) || (isdigit(str[j]) && *numberIsLast)) {
     *numberIsLast = 0;
-    return addOperator(operators, '-', operands);
+    return addOperator(operators, __sub, operands);
   }
 
   if (isdigit(str[j]) && !*numberIsLast) {
@@ -377,20 +392,20 @@ int checkOnUnoOrBinMinus(Stack *operands, Stack *operators, const char *str,
     return addOperand(operands, str, startIndex, -1);
   }
 
-  return 1;
+  return EXIT_FAILURE;
 }
 
 int get_priority(const char symbol) {
   switch (symbol) {
-  case '(':
+  case __open_br:
     return 1;
-  case '+':
+  case __add:
     return 2;
-  case '-':
+  case __sub:
     return 2;
-  case '*':
+  case __mult:
     return 3;
-  case '/':
+  case __div:
     return 3;
   default:
     return 0;
@@ -399,7 +414,7 @@ int get_priority(const char symbol) {
 
 char *findResultOfExpression(Stack *operators, Stack *operands) {
   while (operators->real_size) {
-    if (createOperation(operands, *top(operators)) != 0)
+    if (createOperation(operands, *top(operators)) == EXIT_FAILURE)
       return NULL;
 
     pop(operators);
@@ -413,27 +428,27 @@ char *findResultOfExpression(Stack *operators, Stack *operands) {
 }
 
 int createOperation(Stack *operands, const char op) {
-  if (op == '(')
-    return 1;
+  if (op == __open_br)
+    return EXIT_FAILURE;
 
   if (top(operands) == NULL)
-    return 1;
+    return EXIT_FAILURE;
   char *rightValue = copyString(top(operands), strlen(top(operands)));
   if (rightValue == NULL)
-    return 1;
-  int rightSign = rightValue[0] == '-' ? -1 : 1;
+    return EXIT_FAILURE;
+  int rightSign = rightValue[0] == __sub ? -1 : 1;
   pop(operands);
 
   if (top(operands) == NULL) {
     free(rightValue);
-    return 1;
+    return EXIT_FAILURE;
   }
   char *leftValue = copyString(top(operands), strlen(top(operands)));
   if (leftValue == NULL) {
     free(rightValue);
-    return 1;
+    return EXIT_FAILURE;
   }
-  int leftSign = leftValue[0] == '-' ? -1 : 1;
+  int leftSign = leftValue[0] == __sub ? -1 : 1;
   pop(operands);
 
   char *result =
@@ -441,20 +456,20 @@ int createOperation(Stack *operands, const char op) {
   if (result == NULL) {
     free(leftValue);
     free(rightValue);
-    return 1;
+    return EXIT_FAILURE;
   }
 
-  if (push(operands, result) != 0) {
+  if (push(operands, result) == EXIT_FAILURE) {
     free(result);
     free(leftValue);
     free(rightValue);
-    return 1;
+    return EXIT_FAILURE;
   }
 
   free(result);
   free(leftValue);
   free(rightValue);
-  return 0;
+  return EXIT_SUCCESS;
 }
 char *copyString(const char *source, const size_t size) {
   char *result = (char *)malloc((size + 1) * sizeof(char));
@@ -482,16 +497,16 @@ char *calculateOperation(char *leftValue, int leftSign, char *rightValue,
   LongNumber *resultLN = NULL;
 
   switch (op) {
-  case '+':
+  case __add:
     resultLN = calcAddition(leftLN, rightLN);
     break;
-  case '-':
+  case __sub:
     resultLN = calcSubtraction(leftLN, rightLN);
     break;
-  case '*':
+  case __mult:
     resultLN = calcMultiplication(leftLN, rightLN);
     break;
-  case '/':
+  case __div:
     resultLN = calcDivision(&leftLN, &rightLN);
     break;
   default:
@@ -694,7 +709,7 @@ LongNumber *calcDivision(LongNumber **leftLN, LongNumber **rightLN) {
     return resultLN;
   }
 
-  if (numberIsNotZero(*rightLN) != 0) {
+  if (numberIsNotZero(*rightLN) == EXIT_FAILURE) {
     freeLongNumber(resultLN);
     return NULL;
   }
@@ -737,13 +752,13 @@ LongNumber *calcDivision(LongNumber **leftLN, LongNumber **rightLN) {
 int numberIsNotZero(LongNumber *value) {
   LongNumber *zero = initLongNumber(1);
   if (zero == NULL)
-    return 1;
+    return EXIT_FAILURE;
   if (calcCompareWIthLongNumber(value, zero) == 0) {
     freeLongNumber(zero);
-    return 1;
+    return EXIT_FAILURE;
   }
   freeLongNumber(zero);
-  return 0;
+  return EXIT_SUCCESS;
 }
 
 LongNumber *shiftForLongNumber(LongNumber *value, const int difference) {
@@ -833,7 +848,7 @@ int calcCompareWIthLongNumber(LongNumber *leftValue, LongNumber *rightValue) {
 int reversLongNumber(LongNumber *LN) {
   int *arrayOfNumber = (int *)calloc(LN->size, sizeof(int));
   if (arrayOfNumber == NULL)
-    return 1;
+    return EXIT_FAILURE;
 
   for (int i = (int)LN->size - 1; i >= 0; i--) {
     arrayOfNumber[LN->size - 1 - i] = LN->arrayOfNumber[i];
@@ -842,7 +857,7 @@ int reversLongNumber(LongNumber *LN) {
   free(LN->arrayOfNumber);
   LN->arrayOfNumber = arrayOfNumber;
 
-  return 0;
+  return EXIT_SUCCESS;
 }
 
 void deleteZero(LongNumber *targetLN) {
@@ -860,7 +875,7 @@ char *createStringFromLongNumber(LongNumber *LN) {
   for (size_t i = 1; i <= LN->size; i++) {
     string[i] = toChar(LN->arrayOfNumber[i - 1]);
   }
-  string[0] = (char)(LN->sign < 0 ? '-' : '+');
+  string[0] = (char)(LN->sign < 0 ? __sub : __add);
   string[LN->size + 1] = '\0';
   return string;
 }
@@ -880,7 +895,7 @@ char *checkResult(Stack *operands, Stack *operators) {
 }
 
 void outputResult(const char *result) {
-  if (result[0] == '-')
+  if (result[0] == __sub)
     printf("%c", result[0]);
   printf("%s\n", result + 1);
 }
