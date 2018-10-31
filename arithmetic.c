@@ -15,24 +15,24 @@
 #define __open_br '('
 #define __close_br ')'
 
-typedef struct LongNumber {
-  int *arrayOfNumber;
+typedef struct Long_number {
+  int *array_of_number;
   size_t size;
   int sign;
-} LongNumber;
+} Long_number;
 
-LongNumber *initLongNumber(size_t size) {
-  LongNumber *LN = (LongNumber *)malloc(sizeof(LongNumber));
+Long_number *init_long_number(size_t size) {
+  Long_number *LN = (Long_number *)malloc(sizeof(Long_number));
   if (LN == NULL)
     return NULL;
 
   LN->size = size;
   LN->sign = 1;
-  LN->arrayOfNumber = NULL;
+  LN->array_of_number = NULL;
 
   if (size != 0) {
-    LN->arrayOfNumber = (int *)calloc(LN->size, sizeof(int));
-    if (LN->arrayOfNumber == NULL) {
+    LN->array_of_number = (int *)calloc(LN->size, sizeof(int));
+    if (LN->array_of_number == NULL) {
       free(LN);
       return NULL;
     }
@@ -41,8 +41,8 @@ LongNumber *initLongNumber(size_t size) {
   return LN;
 }
 
-void freeLongNumber(LongNumber *LN) {
-  free(LN->arrayOfNumber);
+void free_long_number(Long_number *LN) {
+  free(LN->array_of_number);
   free(LN);
 }
 
@@ -116,49 +116,56 @@ char *top(Stack *stack) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-char *input_row();                          // Ввод сторки
-char *calculateExpression(const char *str); // Вычиление выражения
-int parseExpression(Stack *operators, Stack *operands, const char *str);
-int isOperator(char symbol);
-int addOperator(Stack *operators, char op,
-                Stack *operands); // Добавление операторов в стек
-int addOperand(Stack *operands, const char *str, size_t *startIndex, int sign);
-int checkOnUnoOrBinMinus(Stack *operands, Stack *operators, const char *str,
-                         size_t *startIndex, int *numberIsLast);
+char *input_row();                      // Ввод сторки
+char *polish_notation(const char *str); // Вычиление выражения
+int parse_expression(Stack *operators, Stack *operands, const char *str);
+int is_operator(char symbol);
+int add_operator_with_calc_operations(
+    Stack *operators, char op,
+    Stack *operands); // Добавление операторов в стек
+int create_and_add_operand(Stack *operands, const char *str,
+                           size_t *start_index, int sign);
+char *create_operand(const char *str, size_t *start_index, int sign);
+int add_operand(Stack *operands, char *new_operand);
+int check_minus_and_add_operator_or_create_operation(Stack *operands,
+                                                     Stack *operators,
+                                                     const char *str,
+                                                     size_t *start_index,
+                                                     int *number_is_last);
 int get_priority(char symbol); // Приоритеты операций
-char *findResultOfExpression(Stack *operators, Stack *operands);
-int createOperation(Stack *operands,
-                    char op); // Вычиление операндов в зависимости от оператора
-char *copyString(const char *source, size_t size);
-char *calculateOperation(char *leftValue, int leftSign, char *rightValue,
-                         int rightSign, char op);
+char *find_result_of_expression(Stack *operators, Stack *operands);
+int create_operation(Stack *operands,
+                     char op); // Вычиление операндов в зависимости от оператора
+char *copy_string(const char *source, size_t size);
+char *calculate_operation(char *left_value, int left_sign, char *right_value,
+                          int right_sign, char op);
 //----------------------------------------------------------------------------------------------------------------------
-LongNumber *createLongNumberFromString(const char *stringOfNumbers,
-                                       size_t stringSize, int sign);
-int toDigit(char value);
+Long_number *create_long_number_from_string(const char *string_of_numbers,
+                                            size_t string_size, int sign);
+int to_digit(char value);
 //----------------------------------------------------------------------------------------------------------------------
-LongNumber *calcAddition(LongNumber *leftLN, LongNumber *rightLN);
-LongNumber *calcAdditionAlgo(LongNumber *leftLN, LongNumber *rightLN);
+Long_number *calc_addition(Long_number *left_LN, Long_number *right_LN);
+Long_number *calc_addition_algo(Long_number *left_LN, Long_number *right_LN);
 //----------------------------------------------------------------------------------------------------------------------
-LongNumber *calcMultiplication(LongNumber *leftLN, LongNumber *rightLN);
+Long_number *calc_multiplication(Long_number *left_LN, Long_number *right_LN);
 //----------------------------------------------------------------------------------------------------------------------
-LongNumber *calcSubtraction(LongNumber *leftLN, LongNumber *rightLN);
-LongNumber *calcSubtractionAlgo(LongNumber *leftLN, LongNumber *rightLN);
+Long_number *calc_subtraction(Long_number *left_LN, Long_number *rightLN);
+Long_number *calc_subtraction_algo(Long_number *left_LN, Long_number *right_LN);
 //----------------------------------------------------------------------------------------------------------------------
-LongNumber *calcDivision(LongNumber **leftLN, LongNumber **rightLN);
-int numberIsNotZero(LongNumber *value);
-LongNumber *shiftForLongNumber(LongNumber *value, int difference);
-LongNumber *calcDivisionAlgo(LongNumber **leftLN, LongNumber **rightLN,
-                             LongNumber *resultLN, int index);
+Long_number *calc_division(Long_number **left_LN, Long_number **right_LN);
+int number_is_not_zero(Long_number *value);
+Long_number *shift_for_long_number(Long_number *value, int difference);
+Long_number *calc_division_algo(Long_number **left_LN, Long_number **right_LN,
+                                Long_number *result_LN, int index);
 //----------------------------------------------------------------------------------------------------------------------
-int calcCompareWIthLongNumber(LongNumber *leftValue, LongNumber *rightValue);
+int calc_compare_with_long_number(Long_number *left_LN, Long_number *right_LN);
 //----------------------------------------------------------------------------------------------------------------------
-void deleteZero(LongNumber *targetLN);
-int reversLongNumber(LongNumber *LN);
-char *createStringFromLongNumber(LongNumber *LN);
-char toChar(int value);
-char *checkResult(Stack *operands, Stack *operators); // Вывод результата
-void outputResult(const char *result);
+void delete_zero(Long_number *target_LN);
+int revers_long_number(Long_number *LN);
+char *create_string_from_long_number(Long_number *LN);
+char to_char(int value);
+char *check_result(Stack *operands, Stack *operators); // Вывод результата
+void output_result(const char *result);
 
 int main() {
   char *str = input_row();
@@ -167,14 +174,14 @@ int main() {
     return 0;
   }
 
-  char *result = calculateExpression(str);
+  char *result = polish_notation(str);
   if (result == NULL) {
     free(str);
     printf("[error]\n");
     return 0;
   }
 
-  outputResult(result);
+  output_result(result);
 
   free(result);
   free(str);
@@ -232,7 +239,7 @@ char *input_row() {
   return row_pointer;
 }
 
-char *calculateExpression(const char *str) {
+char *polish_notation(const char *str) {
   Stack *operators = create_stack();
   if (operators == NULL)
     return NULL;
@@ -243,51 +250,51 @@ char *calculateExpression(const char *str) {
     return NULL;
   }
 
-  if (parseExpression(operators, operands, str) == EXIT_FAILURE) {
-    free_stack(operands);
-    free_stack(operators);
-    return NULL;
+  int do_one_iteration = 1;
+  char *result = NULL;
+
+  while (do_one_iteration--) {
+    if (parse_expression(operators, operands, str) == EXIT_FAILURE)
+      break;
+
+    result = find_result_of_expression(operators, operands);
+    if (result == NULL)
+      break;
   }
 
-  char *result = findResultOfExpression(operators, operands);
-  if (result == NULL) {
-    free_stack(operators);
-    free_stack(operands);
-    return NULL;
-  }
-
-  free_stack(operators);
   free_stack(operands);
-
+  free_stack(operators);
   return result;
 }
 
-int parseExpression(Stack *operators, Stack *operands, const char *str) {
+int parse_expression(Stack *operators, Stack *operands, const char *str) {
   size_t i = 0;
-  int numberIsLast = 0;
+  int number_is_last = 0;
   size_t size_of_str = strlen(str);
   char *top_operator_in_stack = NULL;
   for (; i < size_of_str; i++) {
 
-    while (str[i] && isspace(str[i])) i++;
+    while (str[i] && isspace(str[i]))
+      i++;
 
-    if (isOperator(str[i]) && str[i] != __sub) {
-      numberIsLast = 0;
-      if (addOperator(operators, str[i], operands) == EXIT_FAILURE)
+    if (is_operator(str[i]) && str[i] != __sub) {
+      number_is_last = 0;
+      if (add_operator_with_calc_operations(operators, str[i], operands) ==
+          EXIT_FAILURE)
         return EXIT_FAILURE;
       continue;
     }
 
     if (isdigit(str[i])) {
-      numberIsLast = 1;
-      if (addOperand(operands, str, &i, 1) == EXIT_FAILURE)
+      number_is_last = 1;
+      if (create_and_add_operand(operands, str, &i, 1) == EXIT_FAILURE)
         return EXIT_FAILURE;
       continue;
     }
 
     if (str[i] == __sub) {
-      if (checkOnUnoOrBinMinus(operands, operators, str, &i, &numberIsLast) ==
-        EXIT_FAILURE)
+      if (check_minus_and_add_operator_or_create_operation(
+              operands, operators, str, &i, &number_is_last) == EXIT_FAILURE)
         return EXIT_FAILURE;
       continue;
     }
@@ -298,7 +305,7 @@ int parseExpression(Stack *operators, Stack *operands, const char *str) {
              *top_operator_in_stack != __open_br) {
         if (top_operator_in_stack == NULL)
           return EXIT_FAILURE;
-        if (createOperation(operands, *top_operator_in_stack) == EXIT_FAILURE)
+        if (create_operation(operands, *top_operator_in_stack) == EXIT_FAILURE)
           return EXIT_FAILURE;
         pop(operators);
         top_operator_in_stack = top(operators);
@@ -313,12 +320,13 @@ int parseExpression(Stack *operators, Stack *operands, const char *str) {
   return EXIT_SUCCESS;
 }
 
-int isOperator(const char symbol) {
-  return symbol == __mult || symbol == __div || symbol == __add || symbol == __sub ||
-         symbol == __open_br;
+int is_operator(const char symbol) {
+  return symbol == __mult || symbol == __div || symbol == __add ||
+         symbol == __sub || symbol == __open_br;
 }
 
-int addOperator(Stack *operators, const char op, Stack *operands) {
+int add_operator_with_calc_operations(Stack *operators, const char op,
+                                      Stack *operands) {
   char *temp = (char *)malloc(2 * sizeof(char));
   if (temp == NULL)
     return EXIT_FAILURE;
@@ -336,7 +344,7 @@ int addOperator(Stack *operators, const char op, Stack *operands) {
   else {
     while (operators->real_size != 0 &&
            get_priority(*top(operators)) >= get_priority(*temp)) {
-      if (createOperation(operands, *top(operators)) == EXIT_FAILURE) {
+      if (create_operation(operands, *top(operators)) == EXIT_FAILURE) {
         free(temp);
         return EXIT_FAILURE;
       }
@@ -351,45 +359,60 @@ int addOperator(Stack *operators, const char op, Stack *operands) {
   return EXIT_SUCCESS;
 }
 
-int addOperand(Stack *operands, const char *str, size_t *startIndex,
-               const int sign) {
-  size_t j = *startIndex;
-  for (; str[j] && isdigit(str[j]); j++) {
-  }
-
-  char *temp = (char *)calloc((j - *startIndex + 2), sizeof(char));
-  if (temp == NULL)
-    return EXIT_FAILURE;
-  temp[0] = (char)(sign < 0 ? __sub : __add);
-  temp[j - *startIndex + 1] = '\0';
-
-  memcpy(temp + 1, str + *startIndex, j - *startIndex);
-
-  if (push(operands, temp) == EXIT_FAILURE) {
-    free(temp);
+int create_and_add_operand(Stack *operands, const char *str,
+                           size_t *start_index, const int sign) {
+  char *new_operand = create_operand(str, start_index, sign);
+  if (add_operand(operands, new_operand) == EXIT_FAILURE) {
+    free(new_operand);
     return EXIT_FAILURE;
   }
-  *startIndex = --j;
-  free(temp);
+
+  free(new_operand);
+  return EXIT_SUCCESS;
+}
+
+char *create_operand(const char *str, size_t *start_index, const int sign) {
+  size_t j = *start_index;
+  while (str[j] && isdigit(str[j]))
+    j++;
+
+  char *new_operand = (char *)calloc((j - *start_index + 2), sizeof(char));
+  if (new_operand == NULL)
+    return NULL;
+  new_operand[0] = (char)(sign < 0 ? __sub : __add);
+  new_operand[j - *start_index + 1] = '\0';
+
+  memcpy(new_operand + 1, str + *start_index, j - *start_index);
+  *start_index = --j;
+
+  return new_operand;
+}
+
+int add_operand(Stack *operands, char *new_operand) {
+  if (push(operands, new_operand) == EXIT_FAILURE)
+    return EXIT_FAILURE;
 
   return EXIT_SUCCESS;
 }
 
-int checkOnUnoOrBinMinus(Stack *operands, Stack *operators, const char *str,
-                         size_t *startIndex, int *numberIsLast) {
-  size_t j = *startIndex + 1;
-  for (; str[j] && isspace(str[j]); j++) {
+int check_minus_and_add_operator_or_create_operation(Stack *operands,
+                                                     Stack *operators,
+                                                     const char *str,
+                                                     size_t *start_index,
+                                                     int *number_is_last) {
+  size_t j = *start_index + 1;
+  while (str[j] && isspace(str[j]))
+    j++;
+
+  if (is_operator(str[j]) || (isdigit(str[j]) && *number_is_last)) {
+    *number_is_last = 0;
+    return add_operator_with_calc_operations(operators, __sub, operands);
   }
 
-  if (isOperator(str[j]) || (isdigit(str[j]) && *numberIsLast)) {
-    *numberIsLast = 0;
-    return addOperator(operators, __sub, operands);
-  }
-
-  if (isdigit(str[j]) && !*numberIsLast) {
-    *startIndex = j;
-    *numberIsLast = 1;
-    return addOperand(operands, str, startIndex, -1);
+  if (isdigit(str[j]) && !*number_is_last) {
+    *start_index = j;
+    *number_is_last = 1;
+    return create_and_add_operand(operands, str, start_index, -1);
   }
 
   return EXIT_FAILURE;
@@ -412,66 +435,67 @@ int get_priority(const char symbol) {
   }
 }
 
-char *findResultOfExpression(Stack *operators, Stack *operands) {
+char *find_result_of_expression(Stack *operators, Stack *operands) {
   while (operators->real_size) {
-    if (createOperation(operands, *top(operators)) == EXIT_FAILURE)
+    if (create_operation(operands, *top(operators)) == EXIT_FAILURE)
       return NULL;
 
     pop(operators);
   }
 
-  char *result = checkResult(operands, operators);
+  char *result = check_result(operands, operators);
   if (result == NULL)
     return NULL;
 
   return result;
 }
 
-int createOperation(Stack *operands, const char op) {
+int create_operation(Stack *operands, const char op) {
   if (op == __open_br)
     return EXIT_FAILURE;
 
   if (top(operands) == NULL)
     return EXIT_FAILURE;
-  char *rightValue = copyString(top(operands), strlen(top(operands)));
-  if (rightValue == NULL)
+  char *right_value = copy_string(top(operands), strlen(top(operands)));
+  if (right_value == NULL)
     return EXIT_FAILURE;
-  int rightSign = rightValue[0] == __sub ? -1 : 1;
+  int right_sign = right_value[0] == __sub ? -1 : 1;
   pop(operands);
 
   if (top(operands) == NULL) {
-    free(rightValue);
+    free(right_value);
     return EXIT_FAILURE;
   }
-  char *leftValue = copyString(top(operands), strlen(top(operands)));
-  if (leftValue == NULL) {
-    free(rightValue);
+  char *left_value = copy_string(top(operands), strlen(top(operands)));
+  if (left_value == NULL) {
+    free(right_value);
     return EXIT_FAILURE;
   }
-  int leftSign = leftValue[0] == __sub ? -1 : 1;
+  int left_sign = left_value[0] == __sub ? -1 : 1;
   pop(operands);
 
-  char *result =
-      calculateOperation(leftValue, leftSign, rightValue, rightSign, op);
-  if (result == NULL) {
-    free(leftValue);
-    free(rightValue);
-    return EXIT_FAILURE;
-  }
+  int do_one_iteration = 1;
+  int verdict = EXIT_FAILURE;
 
-  if (push(operands, result) == EXIT_FAILURE) {
+  while (do_one_iteration--) {
+    char *result =
+        calculate_operation(left_value, left_sign, right_value, right_sign, op);
+    if (result == NULL)
+      break;
+
+    if (push(operands, result) == EXIT_FAILURE) {
+      free(result);
+      break;
+    }
+
     free(result);
-    free(leftValue);
-    free(rightValue);
-    return EXIT_FAILURE;
+    verdict = EXIT_SUCCESS;
   }
-
-  free(result);
-  free(leftValue);
-  free(rightValue);
-  return EXIT_SUCCESS;
+  free(left_value);
+  free(right_value);
+  return verdict;
 }
-char *copyString(const char *source, const size_t size) {
+char *copy_string(const char *source, size_t size) {
   char *result = (char *)malloc((size + 1) * sizeof(char));
   if (result == NULL)
     return NULL;
@@ -480,363 +504,363 @@ char *copyString(const char *source, const size_t size) {
   return result;
 }
 
-char *calculateOperation(char *leftValue, int leftSign, char *rightValue,
-                         int rightSign, const char op) {
-  LongNumber *leftLN = createLongNumberFromString(
-      leftValue + 1, strlen(leftValue) - 1, leftSign);
-  if (leftLN == NULL) {
+char *calculate_operation(char *left_value, int left_sign, char *right_value,
+                          int right_sign, char op) {
+  Long_number *left_LN = create_long_number_from_string(
+      left_value + 1, strlen(left_value) - 1, left_sign);
+  if (left_LN == NULL) {
     return NULL;
   }
-  LongNumber *rightLN = createLongNumberFromString(
-      rightValue + 1, strlen(rightValue) - 1, rightSign);
-  if (rightLN == NULL) {
-    freeLongNumber(leftLN);
+  Long_number *right_LN = create_long_number_from_string(
+      right_value + 1, strlen(right_value) - 1, right_sign);
+  if (right_LN == NULL) {
+    free_long_number(left_LN);
     return NULL;
   }
 
-  LongNumber *resultLN = NULL;
+  Long_number *result_LN = NULL;
 
   switch (op) {
   case __add:
-    resultLN = calcAddition(leftLN, rightLN);
+    result_LN = calc_addition(left_LN, right_LN);
     break;
   case __sub:
-    resultLN = calcSubtraction(leftLN, rightLN);
+    result_LN = calc_subtraction(left_LN, right_LN);
     break;
   case __mult:
-    resultLN = calcMultiplication(leftLN, rightLN);
+    result_LN = calc_multiplication(left_LN, right_LN);
     break;
   case __div:
-    resultLN = calcDivision(&leftLN, &rightLN);
+    result_LN = calc_division(&left_LN, &right_LN);
     break;
   default:
     break;
   }
 
-  if (resultLN == NULL) {
-    freeLongNumber(leftLN);
-    freeLongNumber(rightLN);
-    return NULL;
+  int do_one_iteration = 1;
+  char *string_result = NULL;
+  while (do_one_iteration--) {
+    if (result_LN == NULL)
+      break;
+
+    string_result = create_string_from_long_number(result_LN);
+    if (string_result == NULL) {
+      free_long_number(result_LN);
+      break;
+    }
+
+    free_long_number(result_LN);
   }
 
-  char *stringResult = createStringFromLongNumber(resultLN);
-  if (stringResult == NULL) {
-    freeLongNumber(resultLN);
-    freeLongNumber(leftLN);
-    freeLongNumber(rightLN);
-    return NULL;
-  }
-
-  freeLongNumber(resultLN);
-  freeLongNumber(leftLN);
-  freeLongNumber(rightLN);
-  return stringResult;
+  free_long_number(left_LN);
+  free_long_number(right_LN);
+  return string_result;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-LongNumber *createLongNumberFromString(const char *stringOfNumbers,
-                                       const size_t stringSize,
-                                       const int sign) {
-  LongNumber *LN = initLongNumber(stringSize);
+Long_number *create_long_number_from_string(const char *string_of_numbers,
+                                            size_t string_size, int sign) {
+  Long_number *LN = init_long_number(string_size);
   if (LN == NULL)
     return NULL;
 
   LN->sign = sign;
 
   for (int i = (int)LN->size - 1; i >= 0; i--) {
-    LN->arrayOfNumber[LN->size - 1 - i] = toDigit(stringOfNumbers[i]);
+    LN->array_of_number[LN->size - 1 - i] = to_digit(string_of_numbers[i]);
   }
   return LN;
 }
 
-int toDigit(const char value) { return value - '0'; }
+int to_digit(char value) { return value - '0'; }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-LongNumber *calcAddition(LongNumber *leftLN, LongNumber *rightLN) {
-  LongNumber *resultLN = NULL;
+Long_number *calc_addition(Long_number *left_LN, Long_number *right_LN) {
+  Long_number *result_LN = NULL;
 
-  if (leftLN->sign == rightLN->sign) {
-    resultLN = calcAdditionAlgo(leftLN, rightLN);
+  if (left_LN->sign == right_LN->sign) {
+    result_LN = calc_addition_algo(left_LN, right_LN);
   } else {
-    if (leftLN->sign < 0) {
-      leftLN->sign *= -1;
-      resultLN = calcSubtractionAlgo(rightLN, leftLN);
+    if (left_LN->sign < 0) {
+      left_LN->sign *= -1;
+      result_LN = calc_subtraction_algo(right_LN, left_LN);
     }
-    if (rightLN->sign < 0) {
-      rightLN->sign *= -1;
-      resultLN = calcSubtractionAlgo(leftLN, rightLN);
+    if (right_LN->sign < 0) {
+      right_LN->sign *= -1;
+      result_LN = calc_subtraction_algo(left_LN, right_LN);
     }
   }
 
-  if (resultLN == NULL)
+  if (result_LN == NULL)
     return NULL;
 
-  if (reversLongNumber(resultLN)) {
-    freeLongNumber(resultLN);
+  if (revers_long_number(result_LN)) {
+    free_long_number(result_LN);
     return NULL;
   }
 
-  return resultLN;
+  return result_LN;
 }
 
-LongNumber *calcAdditionAlgo(LongNumber *leftLN, LongNumber *rightLN) {
-  size_t resultSize =
-      rightLN->size > leftLN->size ? rightLN->size + 1 : leftLN->size + 1;
+Long_number *calc_addition_algo(Long_number *left_LN, Long_number *right_LN) {
+  size_t result_size =
+      right_LN->size > left_LN->size ? right_LN->size + 1 : left_LN->size + 1;
 
-  LongNumber *resultLN = initLongNumber(resultSize);
-  if (resultLN == NULL) {
+  Long_number *result_LN = init_long_number(result_size);
+  if (result_LN == NULL) {
     return NULL;
   }
-  resultLN->sign = leftLN->sign;
+  result_LN->sign = left_LN->sign;
 
-  int leftBuffer = 0;
-  int rightBuffer = 0;
+  int left_buffer = 0;
+  int right_buffer = 0;
 
-  for (size_t i = 0; i < resultLN->size - 1; i++) {
-    leftBuffer = leftLN->size > i ? leftLN->arrayOfNumber[i] : 0;
-    rightBuffer = rightLN->size > i ? rightLN->arrayOfNumber[i] : 0;
+  for (size_t i = 0; i < result_LN->size - 1; i++) {
+    left_buffer = left_LN->size > i ? left_LN->array_of_number[i] : 0;
+    right_buffer = right_LN->size > i ? right_LN->array_of_number[i] : 0;
 
-    resultLN->arrayOfNumber[i] += leftBuffer + rightBuffer;
-    resultLN->arrayOfNumber[i + 1] += resultLN->arrayOfNumber[i] / 10;
-    resultLN->arrayOfNumber[i] %= 10;
+    result_LN->array_of_number[i] += left_buffer + right_buffer;
+    result_LN->array_of_number[i + 1] += result_LN->array_of_number[i] / 10;
+    result_LN->array_of_number[i] %= 10;
   }
 
-  deleteZero(resultLN);
+  delete_zero(result_LN);
 
-  return resultLN;
+  return result_LN;
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 
-LongNumber *calcMultiplication(LongNumber *leftLN, LongNumber *rightLN) {
-  size_t resultSize = rightLN->size + leftLN->size;
+Long_number *calc_multiplication(Long_number *left_LN, Long_number *right_LN) {
+  size_t result_size = right_LN->size + left_LN->size;
 
-  LongNumber *resultLN = initLongNumber(resultSize);
-  if (resultLN == NULL) {
+  Long_number *result_LN = init_long_number(result_size);
+  if (result_LN == NULL) {
     return NULL;
   }
-  resultLN->sign = leftLN->sign * rightLN->sign;
+  result_LN->sign = left_LN->sign * right_LN->sign;
 
-  for (size_t i = 0; i < leftLN->size; i++) {
-    for (size_t j = 0; j < rightLN->size; j++) {
-      resultLN->arrayOfNumber[i + j] +=
-          leftLN->arrayOfNumber[i] * rightLN->arrayOfNumber[j];
+  for (size_t i = 0; i < left_LN->size; i++) {
+    for (size_t j = 0; j < right_LN->size; j++) {
+      result_LN->array_of_number[i + j] +=
+          left_LN->array_of_number[i] * right_LN->array_of_number[j];
     }
   }
 
-  for (size_t i = 0; i < resultLN->size - 1; i++) {
-    resultLN->arrayOfNumber[i + 1] += resultLN->arrayOfNumber[i] / 10;
-    resultLN->arrayOfNumber[i] %= 10;
+  for (size_t i = 0; i < result_LN->size - 1; i++) {
+    result_LN->array_of_number[i + 1] += result_LN->array_of_number[i] / 10;
+    result_LN->array_of_number[i] %= 10;
   }
 
-  deleteZero(resultLN);
-  if (reversLongNumber(resultLN)) {
-    freeLongNumber(resultLN);
+  delete_zero(result_LN);
+  if (revers_long_number(result_LN)) {
+    free_long_number(result_LN);
     return NULL;
   }
 
-  return resultLN;
+  return result_LN;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-LongNumber *calcSubtraction(LongNumber *leftLN, LongNumber *rightLN) {
-  LongNumber *resultLN = NULL;
+Long_number *calc_subtraction(Long_number *left_LN, Long_number *rightLN) {
+  Long_number *result_LN = NULL;
 
-  if (leftLN->sign == rightLN->sign) {
-    if (leftLN->sign == 1) {
-      resultLN = calcSubtractionAlgo(leftLN, rightLN);
+  if (left_LN->sign == rightLN->sign) {
+    if (left_LN->sign == 1) {
+      result_LN = calc_subtraction_algo(left_LN, rightLN);
     } else {
       rightLN->sign *= -1;
-      leftLN->sign *= -1;
-      resultLN = calcSubtractionAlgo(rightLN, leftLN);
+      left_LN->sign *= -1;
+      result_LN = calc_subtraction_algo(rightLN, left_LN);
     }
   } else {
-    resultLN = calcAdditionAlgo(leftLN, rightLN);
+    result_LN = calc_addition_algo(left_LN, rightLN);
   }
 
-  if (resultLN == NULL)
+  if (result_LN == NULL)
     return NULL;
 
-  if (reversLongNumber(resultLN)) {
-    freeLongNumber(resultLN);
+  if (revers_long_number(result_LN)) {
+    free_long_number(result_LN);
     return NULL;
   }
 
-  return resultLN;
+  return result_LN;
 }
 
-LongNumber *calcSubtractionAlgo(LongNumber *leftLN, LongNumber *rightLN) {
-  if (calcCompareWIthLongNumber(leftLN, rightLN) == -1) {
-    LongNumber *tempLN = leftLN;
-    leftLN = rightLN;
-    rightLN = tempLN;
-    leftLN->sign *= -1;
+Long_number *calc_subtraction_algo(Long_number *left_LN,
+                                   Long_number *right_LN) {
+  if (calc_compare_with_long_number(left_LN, right_LN) == -1) {
+    Long_number *temp_LN = left_LN;
+    left_LN = right_LN;
+    right_LN = temp_LN;
+    left_LN->sign *= -1;
   }
 
-  LongNumber *resultLN = initLongNumber(leftLN->size);
-  if (resultLN == NULL) {
+  Long_number *result_LN = init_long_number(left_LN->size);
+  if (result_LN == NULL) {
     return NULL;
   }
-  resultLN->sign = leftLN->sign;
+  result_LN->sign = left_LN->sign;
 
   int buffer = 0;
-  int rightBuffer = 0;
+  int right_buffer = 0;
 
-  for (size_t i = 0; i < resultLN->size; i++) {
-    rightBuffer = rightLN->size > i ? rightLN->arrayOfNumber[i] : 0;
-    buffer = leftLN->arrayOfNumber[i] - rightBuffer - buffer;
-    resultLN->arrayOfNumber[i] = (buffer + 10) % 10;
+  for (size_t i = 0; i < result_LN->size; i++) {
+    right_buffer = right_LN->size > i ? right_LN->array_of_number[i] : 0;
+    buffer = left_LN->array_of_number[i] - right_buffer - buffer;
+    result_LN->array_of_number[i] = (buffer + 10) % 10;
     buffer = buffer < 0 ? 1 : 0;
   }
 
-  deleteZero(resultLN);
+  delete_zero(result_LN);
 
-  return resultLN;
+  return result_LN;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-LongNumber *calcDivision(LongNumber **leftLN, LongNumber **rightLN) {
-  LongNumber *resultLN = initLongNumber((*leftLN)->size);
-  if (resultLN == NULL) {
+Long_number *calc_division(Long_number **left_LN, Long_number **right_LN) {
+  Long_number *result_LN = init_long_number((*left_LN)->size);
+  if (result_LN == NULL) {
     return NULL;
   }
-  if (calcCompareWIthLongNumber(*leftLN, *rightLN) == -1) {
-    deleteZero(resultLN);
-    return resultLN;
+  if (calc_compare_with_long_number(*left_LN, *right_LN) == -1) {
+    delete_zero(result_LN);
+    return result_LN;
   }
 
-  if (numberIsNotZero(*rightLN) == EXIT_FAILURE) {
-    freeLongNumber(resultLN);
-    return NULL;
-  }
-
-  resultLN->sign = (*leftLN)->sign * (*rightLN)->sign;
-  (*leftLN)->sign = (*rightLN)->sign = 1;
-
-  int difference = (int)(*leftLN)->size - (int)(*rightLN)->size;
-
-  if (reversLongNumber(*rightLN)) {
-    freeLongNumber(resultLN);
+  if (number_is_not_zero(*right_LN) == EXIT_FAILURE) {
+    free_long_number(result_LN);
     return NULL;
   }
 
-  LongNumber *tempLN = shiftForLongNumber(*rightLN, difference);
-  freeLongNumber(*rightLN);
-  *rightLN = tempLN;
+  result_LN->sign = (*left_LN)->sign * (*right_LN)->sign;
+  (*left_LN)->sign = (*right_LN)->sign = 1;
 
-  if (reversLongNumber(*rightLN)) {
-    freeLongNumber(resultLN);
+  int difference = (int)(*left_LN)->size - (int)(*right_LN)->size;
+
+  if (revers_long_number(*right_LN)) {
+    free_long_number(result_LN);
     return NULL;
   }
 
-  tempLN = calcDivisionAlgo(leftLN, rightLN, resultLN, difference);
-  if (tempLN == NULL) {
-    freeLongNumber(resultLN);
-    return NULL;
-  }
-  resultLN = tempLN;
+  Long_number *temp_LN = shift_for_long_number(*right_LN, difference);
+  free_long_number(*right_LN);
+  *right_LN = temp_LN;
 
-  deleteZero(resultLN);
-  if (reversLongNumber(resultLN)) {
-    freeLongNumber(resultLN);
+  if (revers_long_number(*right_LN)) {
+    free_long_number(result_LN);
     return NULL;
   }
 
-  return resultLN;
+  temp_LN = calc_division_algo(left_LN, right_LN, result_LN, difference);
+  if (temp_LN == NULL) {
+    free_long_number(result_LN);
+    return NULL;
+  }
+  result_LN = temp_LN;
+
+  delete_zero(result_LN);
+  if (revers_long_number(result_LN)) {
+    free_long_number(result_LN);
+    return NULL;
+  }
+
+  return result_LN;
 }
 
-int numberIsNotZero(LongNumber *value) {
-  LongNumber *zero = initLongNumber(1);
+int number_is_not_zero(Long_number *value) {
+  Long_number *zero = init_long_number(1);
   if (zero == NULL)
     return EXIT_FAILURE;
-  if (calcCompareWIthLongNumber(value, zero) == 0) {
-    freeLongNumber(zero);
+  if (calc_compare_with_long_number(value, zero) == 0) {
+    free_long_number(zero);
     return EXIT_FAILURE;
   }
-  freeLongNumber(zero);
+  free_long_number(zero);
   return EXIT_SUCCESS;
 }
 
-LongNumber *shiftForLongNumber(LongNumber *value, const int difference) {
-  LongNumber *resultLN = initLongNumber(0);
-  if (resultLN == NULL) {
+Long_number *shift_for_long_number(Long_number *value, int difference) {
+  Long_number *result_LN = init_long_number(0);
+  if (result_LN == NULL) {
     return NULL;
   }
-  resultLN->size = value->size + difference;
-  resultLN->arrayOfNumber = (int *)calloc(resultLN->size, sizeof(int));
-  if (resultLN->arrayOfNumber == NULL) {
-    free(resultLN);
+  result_LN->size = value->size + difference;
+  result_LN->array_of_number = (int *)calloc(result_LN->size, sizeof(int));
+  if (result_LN->array_of_number == NULL) {
+    free(result_LN);
     return NULL;
   }
 
   for (size_t i = 0; i < value->size; i++) {
-    resultLN->arrayOfNumber[i] = value->arrayOfNumber[i];
+    result_LN->array_of_number[i] = value->array_of_number[i];
   }
 
-  return resultLN;
+  return result_LN;
 }
 
-LongNumber *calcDivisionAlgo(LongNumber **leftLN, LongNumber **rightLN,
-                             LongNumber *resultLN, int index) {
-  LongNumber *bufferLN = initLongNumber((*leftLN)->size + 1);
-  if (bufferLN == NULL) {
+Long_number *calc_division_algo(Long_number **left_LN, Long_number **right_LN,
+                                Long_number *result_LN, int index) {
+  Long_number *buffer_LN = init_long_number((*left_LN)->size + 1);
+  if (buffer_LN == NULL) {
     return NULL;
   }
   int digit = 0;
-  LongNumber *tempLN = NULL;
+  Long_number *temp_LN = NULL;
   for (; index >= 0; index--) {
-    deleteZero(bufferLN);
+    delete_zero(buffer_LN);
     digit = 0;
 
     do {
-      tempLN = calcAdditionAlgo(bufferLN, *rightLN);
-      freeLongNumber(bufferLN);
-      bufferLN = tempLN;
+      temp_LN = calc_addition_algo(buffer_LN, *right_LN);
+      free_long_number(buffer_LN);
+      buffer_LN = temp_LN;
       digit++;
-    } while (calcCompareWIthLongNumber(bufferLN, *leftLN) <= 0);
+    } while (calc_compare_with_long_number(buffer_LN, *left_LN) <= 0);
 
-    tempLN = calcSubtractionAlgo(bufferLN, *rightLN);
-    freeLongNumber(bufferLN);
-    bufferLN = tempLN;
+    temp_LN = calc_subtraction_algo(buffer_LN, *right_LN);
+    free_long_number(buffer_LN);
+    buffer_LN = temp_LN;
     digit--;
 
-    tempLN = calcSubtractionAlgo(*leftLN, bufferLN);
-    freeLongNumber(*leftLN);
-    *leftLN = tempLN;
-    resultLN->arrayOfNumber[index] = digit;
+    temp_LN = calc_subtraction_algo(*left_LN, buffer_LN);
+    free_long_number(*left_LN);
+    *left_LN = temp_LN;
+    result_LN->array_of_number[index] = digit;
 
-    if (reversLongNumber(*rightLN)) {
-      freeLongNumber(bufferLN);
+    if (revers_long_number(*right_LN)) {
+      free_long_number(buffer_LN);
       return NULL;
     }
-    (*rightLN)->size--;
-    if (reversLongNumber(*rightLN)) {
-      freeLongNumber(bufferLN);
+    (*right_LN)->size--;
+    if (revers_long_number(*right_LN)) {
+      free_long_number(buffer_LN);
       return NULL;
     }
   }
 
-  freeLongNumber(bufferLN);
-  return resultLN;
+  free_long_number(buffer_LN);
+  return result_LN;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-int calcCompareWIthLongNumber(LongNumber *leftValue, LongNumber *rightValue) {
-  if (leftValue->size > rightValue->size) {
+int calc_compare_with_long_number(Long_number *left_LN, Long_number *right_LN) {
+  if (left_LN->size > right_LN->size) {
     return 1;
-  } else if (leftValue->size < rightValue->size) {
+  } else if (left_LN->size < right_LN->size) {
     return -1;
   } else {
 
-    for (int i = (int)leftValue->size - 1; i >= 0; i--) {
-      if (leftValue->arrayOfNumber[i] > rightValue->arrayOfNumber[i])
+    for (int i = (int)left_LN->size - 1; i >= 0; i--) {
+      if (left_LN->array_of_number[i] > right_LN->array_of_number[i])
         return 1;
-      if (leftValue->arrayOfNumber[i] < rightValue->arrayOfNumber[i])
+      if (left_LN->array_of_number[i] < right_LN->array_of_number[i])
         return -1;
     }
     return 0;
@@ -845,46 +869,46 @@ int calcCompareWIthLongNumber(LongNumber *leftValue, LongNumber *rightValue) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-int reversLongNumber(LongNumber *LN) {
-  int *arrayOfNumber = (int *)calloc(LN->size, sizeof(int));
-  if (arrayOfNumber == NULL)
+int revers_long_number(Long_number *LN) {
+  int *array_of_number = (int *)calloc(LN->size, sizeof(int));
+  if (array_of_number == NULL)
     return EXIT_FAILURE;
 
   for (int i = (int)LN->size - 1; i >= 0; i--) {
-    arrayOfNumber[LN->size - 1 - i] = LN->arrayOfNumber[i];
+    array_of_number[LN->size - 1 - i] = LN->array_of_number[i];
   }
 
-  free(LN->arrayOfNumber);
-  LN->arrayOfNumber = arrayOfNumber;
+  free(LN->array_of_number);
+  LN->array_of_number = array_of_number;
 
   return EXIT_SUCCESS;
 }
 
-void deleteZero(LongNumber *targetLN) {
-  while (targetLN->arrayOfNumber[targetLN->size - 1] == 0 &&
-         targetLN->size > 1) {
-    targetLN->size--;
+void delete_zero(Long_number *target_LN) {
+  while (target_LN->array_of_number[target_LN->size - 1] == 0 &&
+         target_LN->size > 1) {
+    target_LN->size--;
   }
 }
 
-char *createStringFromLongNumber(LongNumber *LN) {
+char *create_string_from_long_number(Long_number *LN) {
   char *string = (char *)malloc((LN->size + 2) * sizeof(char));
   if (string == NULL)
     return NULL;
 
   for (size_t i = 1; i <= LN->size; i++) {
-    string[i] = toChar(LN->arrayOfNumber[i - 1]);
+    string[i] = to_char(LN->array_of_number[i - 1]);
   }
   string[0] = (char)(LN->sign < 0 ? __sub : __add);
   string[LN->size + 1] = '\0';
   return string;
 }
 
-char toChar(const int value) { return value + '0'; }
+char to_char(int value) { return value + '0'; }
 
-char *checkResult(Stack *operands, Stack *operators) {
+char *check_result(Stack *operands, Stack *operators) {
   if (operands->real_size == 1 && operators->real_size == 0) {
-    char *result = copyString(top(operands), strlen(top(operands)));
+    char *result = copy_string(top(operands), strlen(top(operands)));
     if (result == NULL)
       return NULL;
 
@@ -894,7 +918,7 @@ char *checkResult(Stack *operands, Stack *operators) {
   }
 }
 
-void outputResult(const char *result) {
+void output_result(const char *result) {
   if (result[0] == __sub)
     printf("%c", result[0]);
   printf("%s\n", result + 1);
